@@ -4,36 +4,44 @@ import 'package:shoplist/components/logo.dart';
 import 'package:shoplist/components/my_text_field.dart';
 import 'package:shoplist/helper/helper.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController changePasswordController =
+      TextEditingController();
 
-  void login()async{
+  void registerUser() async {
     showDialog(
-      context: context, 
+      context: context,
       builder: (context) => const Center(
         child: CircularProgressIndicator(),
       ),
     );
-    try{
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text, 
-        password: passwordController.text,
-      );
-      if(context.mounted){
-        Navigator.pushNamed(context, '/home_page');
-        Navigator.pop(context);
-      }
-    }on FirebaseException catch(e) {
+    if (passwordController.text != changePasswordController.text) {
       Navigator.pop(context);
-      displayMessageToUser(e.code, context);
+      displayMessageToUser("Passwords don't match!", context);
+    } else {
+      try {
+        UserCredential? userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+        Navigator.pushNamed(context, '/home_page');
+      } on FirebaseAuthException catch (e) {
+        Navigator.pop(context);
+        displayMessageToUser(
+          e.code,
+          context,
+        );
+      }
     }
   }
 
@@ -80,6 +88,14 @@ class _LoginPageState extends State<LoginPage> {
                       controller: passwordController,
                     ),
                     const SizedBox(
+                      height: 20,
+                    ),
+                    MyTextField(
+                      hintText: 'Change password',
+                      obscureText: true,
+                      controller: changePasswordController,
+                    ),
+                    const SizedBox(
                       height: 15,
                     ),
                     Row(
@@ -87,14 +103,25 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '/register_page');
+                            Navigator.pushNamed(context, '/login_page');
                           },
-                          child: Text(
-                            "Create Account",
-                            style: TextStyle(
-                              color: Colors.grey[900],
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                          child: RichText(
+                            text: TextSpan(
+                              text: 'I have an account ',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              children: <TextSpan>[
+                                TextSpan(
+                                    text: ' Sign in',
+                                    style: TextStyle(
+                                      color: Colors.grey[900],
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    )),
+                              ],
                             ),
                           ),
                         ),
@@ -106,12 +133,12 @@ class _LoginPageState extends State<LoginPage> {
                     Container(
                       width: double.infinity,
                       child: TextButton(
-                        onPressed: login,
+                        onPressed: registerUser,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 15),
                           child: Text(
-                            'Log in ',
+                            'Register',
                             style: TextStyle(color: Colors.grey[700]),
                           ),
                         ),
