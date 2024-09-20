@@ -29,7 +29,6 @@ class _LoginPageState extends State<LoginPage> {
       );
       if(context.mounted){
         Navigator.pushNamed(context, '/home_page');
-        Navigator.pop(context);
       }
     }on FirebaseException catch(e) {
       Navigator.pop(context);
