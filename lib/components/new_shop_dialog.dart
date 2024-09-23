@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class NewShopDialog extends StatefulWidget {
   final String hintText;
-  const NewShopDialog({super.key, required this.hintText,});
+  final TextEditingController controller;
+  const NewShopDialog({super.key, required this.hintText, required this.controller,});
 
   @override
   State<NewShopDialog> createState() => _NewShopDialogState();
@@ -13,6 +14,7 @@ class _NewShopDialogState extends State<NewShopDialog> {
   Widget build(BuildContext context) {
     return Container(
       child: TextField(
+        controller: widget.controller,
         style: TextStyle(
           color: Colors.grey[700],
           fontSize: 16,

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shoplist/components/new_shop_dialog.dart';
 import 'package:shoplist/components/logo.dart';
-import 'package:shoplist/components/my_text_field.dart';
+import 'package:shoplist/main.dart';
+import 'package:shoplist/models/shop.dart';
+import 'package:shoplist/models/shop_database.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,6 +14,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController linkController = TextEditingController();
+  // final textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    readShop();
+  }
+
   void createNote() {
     showDialog(
       context: context,
@@ -30,37 +43,44 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 10,
               ),
-              const NewShopDialog(hintText: 'Name'),
+              NewShopDialog(
+                controller: nameController,
+                hintText: 'Name',
+              ),
               const SizedBox(
                 height: 10,
               ),
-              const NewShopDialog(hintText: 'Link'),
+              NewShopDialog(
+                controller: linkController,
+                hintText: 'Link',
+              ),
               const SizedBox(
                 height: 20,
               ),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  width: double.infinity,
-                  child: Center(
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-                      child: Text(
-                        'Add to my list',
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+              MaterialButton(
+                minWidth: double.infinity,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: const BorderSide(
+                    width: 1,
+                    color:Color.fromRGBO(77, 77, 77, 0.5),
+                  )
+                ),
+                onPressed: () {
+                  context.read<ShopDatabase>().addShop(nameController.text, linkController.text);
+                  nameController.clear();
+                  linkController.clear();
+                  Navigator.pop(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                  child: Text(
+                    'Add to my list',
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color.fromRGBO(77, 77, 77, 0.5),
-                    ),
-                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
               ),
@@ -68,7 +88,9 @@ class _HomePageState extends State<HomePage> {
                 height: 10,
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pop(context);
+                },
                 child: Text(
                   'Close',
                   style: TextStyle(
@@ -85,10 +107,32 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void readShop(){
+    context.watch<ShopDatabase>().fetchShop();
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final shopDataBase = context.watch<ShopDatabase>();
+    List<Shop> currentShops = shopDataBase.currentShop;
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Logo(),
+        elevation: 0.0,
+        backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            onPressed: (){}, 
+            icon: Icon(Icons.logout),
+          )
+        ],
+      ),
       body: Container(
+        width: double.infinity,
         child: Ink(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -101,15 +145,15 @@ class _HomePageState extends State<HomePage> {
                 end: Alignment.bottomRight,
                 tileMode: TileMode.mirror),
           ),
-          child: Container(
-            width: double.infinity,
-            child: const Column(
-              children: [
-                SafeArea(
-                  child: Logo(),
-                ),
-              ],
-            ),
+          child: ListView.builder(
+            itemCount: currentShops.length,
+            itemBuilder: (context, index) {
+              final shop = currentShops[index];
+              return ListTile(
+                title: Text(shop.name),
+                subtitle: Text(shop.link),
+              );
+            },
           ),
         ),
       ),
@@ -120,3 +164,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+
+
+/**
+ * const SafeArea(
+                child: Logo(),
+              ),
+ */
