@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shoplist/components/new_shop_dialog.dart';
@@ -20,8 +22,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    super.initState();
     readShop();
+    super.initState();
   }
 
   void createNote() {
@@ -63,17 +65,20 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(20),
                   side: const BorderSide(
                     width: 1,
-                    color:Color.fromRGBO(77, 77, 77, 0.5),
-                  )
+                    color: Color.fromRGBO(77, 77, 77, 0.5),
+                  ),
                 ),
                 onPressed: () {
-                  context.read<ShopDatabase>().addShop(nameController.text, linkController.text);
+                  context
+                      .read<ShopDatabase>()
+                      .addShop(nameController.text, linkController.text);
                   nameController.clear();
                   linkController.clear();
                   Navigator.pop(context);
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                   child: Text(
                     'Add to my list',
                     style: TextStyle(
@@ -107,13 +112,93 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void readShop(){
-    context.watch<ShopDatabase>().fetchShop();
+  void readShop() {
+    context.read<ShopDatabase>().fetchShop();
+  }
+
+  void updateShop(Shop shop) {
+    nameController.text = shop.name;
+    linkController.text = shop.link;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Container(
+          height: 250,
+          child: Column(
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                'Update Note',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Column(
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  NewShopDialog(
+                    controller: nameController,
+                    hintText: 'Name',
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  NewShopDialog(
+                    controller: linkController,
+                    hintText: 'Link',
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              MaterialButton(
+                onPressed: () {
+                  context.read<ShopDatabase>().updateShop(
+                      shop.id, nameController.text, linkController.text);
+                  nameController.clear();
+                  linkController.clear();
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                minWidth: double.infinity,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: const BorderSide(
+                    width: 1,
+                    color: Color.fromRGBO(77, 77, 77, 0.5),
+                  ),
+                ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                  child: Text(
+                    'Update',
+                    style: TextStyle(
+                      color: Colors.grey[900],
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void deleteShop(int id) {
+    context.read<ShopDatabase>().deleteShop(id);
   }
 
   @override
   Widget build(BuildContext context) {
-
     final shopDataBase = context.watch<ShopDatabase>();
     List<Shop> currentShops = shopDataBase.currentShop;
 
@@ -126,7 +211,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            onPressed: (){}, 
+            onPressed: () {},
             icon: Icon(Icons.logout),
           )
         ],
@@ -149,9 +234,27 @@ class _HomePageState extends State<HomePage> {
             itemCount: currentShops.length,
             itemBuilder: (context, index) {
               final shop = currentShops[index];
-              return ListTile(
-                title: Text(shop.name),
-                subtitle: Text(shop.link),
+              return Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(255, 255, 255, 0.7),
+                ),
+                child: ListTile(
+                  title: Text(shop.name),
+                  subtitle: Text(shop.link),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () => updateShop(shop),
+                        icon: const Icon(Icons.edit),
+                      ),
+                      IconButton(
+                        onPressed: () => deleteShop(shop.id),
+                        icon: const Icon(Icons.delete),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           ),
@@ -159,16 +262,20 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: createNote,
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        backgroundColor: const Color.fromRGBO(255, 255, 255, 0.3),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          side: const BorderSide(
+            width: 1,
+            color: Color.fromRGBO(255, 255, 255, 0.9),
+          ),
+          borderRadius: BorderRadius.circular(100),
+        ),
       ),
     );
   }
 }
-
-
-
-/**
- * const SafeArea(
-                child: Logo(),
-              ),
- */
