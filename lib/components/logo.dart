@@ -8,10 +8,10 @@ class Logo extends StatelessWidget {
     return const Column(
       children: [
         Text(
-          'Shmot',
+          'SHMOT',
           style: TextStyle(
             fontSize: 20,
-            color: Colors.brown,
+            color: Color(0xff603F26),
             fontWeight: FontWeight.w700,
           ),
         )

@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shoplist/components/new_shop_dialog.dart';
 import 'package:shoplist/components/logo.dart';
+import 'package:shoplist/components/web_view.dart';
 import 'package:shoplist/main.dart';
 import 'package:shoplist/models/shop.dart';
 import 'package:shoplist/models/shop_database.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -211,8 +213,10 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pushNamed(context, '/login_page');
+            },
+            icon: const Icon(Icons.logout_outlined,color: Color(0xff603F26),),
           )
         ],
       ),
@@ -234,25 +238,87 @@ class _HomePageState extends State<HomePage> {
             itemCount: currentShops.length,
             itemBuilder: (context, index) {
               final shop = currentShops[index];
-              return Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromRGBO(255, 255, 255, 0.7),
-                ),
-                child: ListTile(
-                  title: Text(shop.name),
-                  subtitle: Text(shop.link),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () => updateShop(shop),
-                        icon: const Icon(Icons.edit),
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 13, horizontal: 20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(255, 255, 255, 0.4),
+                    borderRadius: BorderRadius.circular(20),
+                    border: const Border(
+                      top: BorderSide(
+                        width: 1.5,
+                        color: Color.fromRGBO(255, 255, 255, 0.9),
                       ),
-                      IconButton(
-                        onPressed: () => deleteShop(shop.id),
-                        icon: const Icon(Icons.delete),
+                      left: BorderSide(
+                          width: 1.5,
+                          color: Color.fromRGBO(255, 255, 255, 0.9)),
+                    ),
+                  ),
+                  child: ListTile(
+                    title: Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Text(
+                        shop.name,
+                        style: const TextStyle(
+                          color: Color(0xFF6C4E31),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ],
+                    ),
+                    subtitle: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => WebView(link: shop.link)));
+                      },
+                      child: Container(
+                        child: const Padding(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Go to the store',
+                                style: TextStyle(
+                                  color: Color(0xff603F26),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Icon(Icons.arrow_forward_ios_outlined, size: 14, color: Color(0xff603F26),),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    trailing: Container(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            color: const Color(0xff603F26),
+                            onPressed: () => updateShop(shop),
+                            icon: const Icon(Icons.edit_outlined),
+                          ),
+                          SizedBox(
+                            height: 30, 
+                            width: 1, 
+                            child: Container.new(
+                              color: const Color(0xff603F26),
+                            ),
+                          ),
+                          IconButton(
+                            color: const Color(0xff603F26),
+                            onPressed: () => deleteShop(shop.id),
+                            icon: const Icon(Icons.delete_outline),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -264,14 +330,14 @@ class _HomePageState extends State<HomePage> {
         onPressed: createNote,
         child: const Icon(
           Icons.add,
-          color: Colors.white,
+          color: Color(0xff603F26),
         ),
-        backgroundColor: const Color.fromRGBO(255, 255, 255, 0.3),
+        backgroundColor: const Color.fromRGBO(255, 255, 255, 0.5),
         elevation: 0,
         shape: RoundedRectangleBorder(
           side: const BorderSide(
             width: 1,
-            color: Color.fromRGBO(255, 255, 255, 0.9),
+            color: Color.fromRGBO(255, 255, 255, 0.8),
           ),
           borderRadius: BorderRadius.circular(100),
         ),
@@ -279,3 +345,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+//добавить обработку добавления новых сторов, если пустые поля, то не добавляем
+//додумать дизайн есть нектр сложности с цветами - не красиво сейчас 
+//застилизовать дилоговые окна под общую картину приложения
+//при скроле убрать у апп бар тень
+
+
+

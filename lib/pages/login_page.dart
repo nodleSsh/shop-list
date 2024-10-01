@@ -111,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                               vertical: 10, horizontal: 15),
                           child: Text(
                             'Log in ',
-                            style: TextStyle(color: Colors.grey[700]),
+                            style: TextStyle(color: Colors.grey[700], fontSize: 16,),
                           ),
                         ),
                         style: ButtonStyle(

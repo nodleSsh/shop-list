@@ -139,7 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               vertical: 10, horizontal: 15),
                           child: Text(
                             'Register',
-                            style: TextStyle(color: Colors.grey[700]),
+                            style: TextStyle(color: Colors.grey[700], fontSize: 16,),
                           ),
                         ),
                         style: ButtonStyle(
