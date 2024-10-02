@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class NewShopDialog extends StatefulWidget {
   final String hintText;
   final TextEditingController controller;
-  const NewShopDialog({super.key, required this.hintText, required this.controller,});
+  const NewShopDialog({super.key, required this.hintText, required this.controller});
 
   @override
   State<NewShopDialog> createState() => _NewShopDialogState();

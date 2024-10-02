@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shoplist/components/new_shop_dialog.dart';
 import 'package:shoplist/components/logo.dart';
 import 'package:shoplist/components/web_view.dart';
+import 'package:shoplist/helper/helper.dart';
 import 'package:shoplist/main.dart';
 import 'package:shoplist/models/shop.dart';
 import 'package:shoplist/models/shop_database.dart';
@@ -71,12 +72,18 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 onPressed: () {
-                  context
-                      .read<ShopDatabase>()
-                      .addShop(nameController.text, linkController.text);
-                  nameController.clear();
-                  linkController.clear();
-                  Navigator.pop(context);
+                  if (nameController.text == '' && linkController.text == '') {
+                    Navigator.pop(context);
+                    displayMessageToUser(
+                        'Nothing added. \nPlease fill in all fields.', context);
+                  } else {
+                    context
+                        .read<ShopDatabase>()
+                        .addShop(nameController.text, linkController.text);
+                    nameController.clear();
+                    linkController.clear();
+                    Navigator.pop(context);
+                  }
                 },
                 child: Padding(
                   padding:
@@ -125,7 +132,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => AlertDialog(
         content: Container(
-          height: 250,
+          height: 290,
           child: Column(
             children: [
               Text(
@@ -165,7 +172,6 @@ class _HomePageState extends State<HomePage> {
                   nameController.clear();
                   linkController.clear();
                   Navigator.pop(context);
-                  Navigator.pop(context);
                 },
                 minWidth: double.infinity,
                 shape: RoundedRectangleBorder(
@@ -188,6 +194,19 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
+                const SizedBox(
+                height: 10,
+              ),
+              TextButton(
+                onPressed: (){
+                  Navigator.pop(context);
+                }, 
+                child: Text('Close', style: TextStyle(
+                      color: Colors.grey[900],
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),),
+              ),
             ],
           ),
         ),
@@ -196,7 +215,69 @@ class _HomePageState extends State<HomePage> {
   }
 
   void deleteShop(int id) {
-    context.read<ShopDatabase>().deleteShop(id);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Container(
+          height: double.parse('100'),
+          child: Column(
+            children: [
+              Text(
+                'Delete this element?',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      context.read<ShopDatabase>().deleteShop(id);
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'Yes',
+                      style: TextStyle(color: Colors.grey[700]),
+                    ),
+                    style: ButtonStyle(
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                          side: const BorderSide(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'No',
+                      style: TextStyle(color: Colors.grey[700]),
+                    ),
+                    style: ButtonStyle(
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                          side: const BorderSide(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -207,6 +288,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
         title: const Logo(),
         elevation: 0.0,
@@ -216,7 +298,10 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               Navigator.pushNamed(context, '/login_page');
             },
-            icon: const Icon(Icons.logout_outlined,color: Color(0xff603F26),),
+            icon: const Icon(
+              Icons.logout_outlined,
+              color: Color(0xff603F26),
+            ),
           )
         ],
       ),
@@ -289,7 +374,11 @@ class _HomePageState extends State<HomePage> {
                               SizedBox(
                                 width: 5,
                               ),
-                              Icon(Icons.arrow_forward_ios_outlined, size: 14, color: Color(0xff603F26),),
+                              Icon(
+                                Icons.arrow_forward_ios_outlined,
+                                size: 14,
+                                color: Color(0xff603F26),
+                              ),
                             ],
                           ),
                         ),
@@ -305,8 +394,8 @@ class _HomePageState extends State<HomePage> {
                             icon: const Icon(Icons.edit_outlined),
                           ),
                           SizedBox(
-                            height: 30, 
-                            width: 1, 
+                            height: 30,
+                            width: 1,
                             child: Container.new(
                               color: const Color(0xff603F26),
                             ),
@@ -349,7 +438,7 @@ class _HomePageState extends State<HomePage> {
 //добавить обработку добавления новых сторов, если пустые поля, то не добавляем
 //додумать дизайн есть нектр сложности с цветами - не красиво сейчас 
 //застилизовать дилоговые окна под общую картину приложения
-//при скроле убрать у апп бар тень
+//при скроле убрать у апп бар тень done
 
 
 
